@@ -67,21 +67,56 @@ hourly_step <- read.csv("hourlySteps_merged.csv")
 ``` r
 head(daily_activity)
 ```
-
+    ##    Id ActivityDate TotalSteps TotalDistance TrackerDistance LoggedActivitiesDistance
+    ## 1 1503960366    4/12/2016      13162          8.50            8.50                        0
+    ## 2 1503960366    4/13/2016      10735          6.97            6.97                        0
+    ## 3 1503960366    4/14/2016      10460          6.74            6.74                        0
+    ## 4 1503960366    4/15/2016       9762          6.28            6.28                        0
+    ## 5 1503960366    4/16/2016      12669          8.16            8.16                        0
+    ## 6 1503960366    4/17/2016       9705          6.48            6.48                        0
+    ##   VeryActiveDistance ModeratelyActiveDistance LightActiveDistance SedentaryActiveDistance
+    ## 1               1.88                     0.55                6.06                       0
+    ## 2               1.57                     0.69                4.71                       0
+    ## 3               2.44                     0.40                3.91                       0
+    ## 4               2.14                     1.26                2.83                       0
+    ## 5               2.71                     0.41                5.04                       0
+    ## 6               3.19                     0.78                2.51                       0
+    ##   VeryActiveMinutes FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes Calories
+    ## 1                25                  13                  328              728     1985
+    ## 2                21                  19                  217              776     1797
+    ## 3                30                  11                  181             1218     1776
+    ## 4                29                  34                  209              726     1745
+    ## 5                36                  10                  221              773     1863
+    ## 6                38                  20                  164              539     1728
 ``` r
 head(sleep_day)
 ```
 
-    ##           Id              SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
+    ##       Id              SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
     ## 1 1503960366 4/12/2016 12:00:00 AM                 1                327            346
     ## 2 1503960366 4/13/2016 12:00:00 AM                 2                384            407
     ## 3 1503960366 4/15/2016 12:00:00 AM                 1                412            442
     ## 4 1503960366 4/16/2016 12:00:00 AM                 2                340            367
     ## 5 1503960366 4/17/2016 12:00:00 AM                 1                700            712
     ## 6 1503960366 4/19/2016 12:00:00 AM                 1                304            320
+##### *The 12:00:00 AM timestamp is redundant and unnecessary. Removing it will simplify the data, making it easier to analyze.*
+```r
+# Convert SleepDay to Date format (removes time part) 
+sleep_day$SleepDay <- as.Date(sleep_day$SleepDay, format="%m/%d/%Y")
 
-``` r
-**Notice how the 12:00:00 AM timestamp on each observation is unnecessary, so it should be removed to simplify the data for easier anaysis.** 
+# Format the SleepDay to "MM/DD/YYYY" format
+sleep_day$SleepDay <- format(sleep_day$SleepDay, "%m/%d/%Y")
+
+# Check the result
+head(sleep_day)
+```
+    ##           Id   SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
+    ## 1 1503960366 2016-04-12                 1                327            346
+    ## 2 1503960366 2016-04-13                 2                384            407
+    ## 3 1503960366 2016-04-15                 1                412            442
+    ## 4 1503960366 2016-04-16                 2                340            367
+    ## 5 1503960366 2016-04-17                 1                700            712
+    ## 6 1503960366 2016-04-19                 1                304            320
 ``` r
 head(weight)
 ```
