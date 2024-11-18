@@ -55,15 +55,71 @@ library(readr) #save csv
 library(plotly) #pie chart
 library(lm.beta) 
 ```
---Load and View the CSV files--
+--Load CSV files--
 ``` r
 setwd("/cloud/project")
 
-daily_activity <- read.csv("dailyActivity_merged.csv")
 sleep_day <- read.csv("sleepDay_merged.csv")
+daily_activity <- read.csv("dailyActivity_merged.csv")
 weight <- read.csv("weightLogInfo_merged.csv")
-hourly_step <- read.csv("hourlySteps_merged.csv")
+hourly_steps <- read.csv("hourlySteps_merged.csv")
 ```
+--Count the Distinct IDs in Each Dataset to Determine the Number of Participants--
+```r
+n_distinct(sleep_day$Id)
+```
+    ## [1] 24 
+*sleep_day has 24 user data*
+```r
+n_distinct(daily_activity$Id)
+```
+    ## [1] 33 
+*daily_activity has 33 user data*
+```r
+n_distinct(hourly_step$Id)
+```
+    ## [1] 33 
+*hourly_steps has 33 user data*
+```r
+n_distinct(weight$Id)
+```
+    ## [1] 8 
+*weight has 8 user data. Due to this limited sample size, it will be excluded.*
+
+--View, Clean, and Merge Data Set--
+``` r
+head(sleep_day)
+```
+
+    ##       Id              SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
+    ## 1 1503960366 4/12/2016 12:00:00 AM                 1                327            346
+    ## 2 1503960366 4/13/2016 12:00:00 AM                 2                384            407
+    ## 3 1503960366 4/15/2016 12:00:00 AM                 1                412            442
+    ## 4 1503960366 4/16/2016 12:00:00 AM                 2                340            367
+    ## 5 1503960366 4/17/2016 12:00:00 AM                 1                700            712
+    ## 6 1503960366 4/19/2016 12:00:00 AM                 1                304            320
+##### *The 12:00:00 AM timestamp is redundant and unnecessary. Removing it will simplify the data. Additionally, the SleepDay column will be renamed to Date for consistency.*
+```r
+# Convert SleepDay to Date format (removes time part) 
+sleep_day$SleepDay <- as.Date(sleep_day$SleepDay, format="%m/%d/%Y")
+
+# Format the SleepDay to "MM/DD/YYYY" format
+sleep_day$SleepDay <- format(sleep_day$SleepDay, "%m/%d/%Y")
+
+# Rename the column 'SleepDay' to 'Date'
+colnames(sleep_day)[colnames(sleep_day) == "SleepDay"] <- "Date"
+
+# Check the result
+head(sleep_day)
+```
+    ##           Id       Date TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
+    ## 1 1503960366 04/12/2016                 1                327            346
+    ## 2 1503960366 04/13/2016                 2                384            407
+    ## 3 1503960366 04/15/2016                 1                412            442
+    ## 4 1503960366 04/16/2016                 2                340            367
+    ## 5 1503960366 04/17/2016                 1                700            712
+    ## 6 1503960366 04/19/2016                 1                304            320
+
 ``` r
 head(daily_activity)
 ```
@@ -88,35 +144,98 @@ head(daily_activity)
     ## 4                29                  34                  209              726     1745
     ## 5                36                  10                  221              773     1863
     ## 6                38                  20                  164              539     1728
-``` r
-head(sleep_day)
+##### *The columns LoggedActivitiesDistance and SedentaryActiveDistance do not provide valuable information. Removing these columns will simplify the data.*
+```r
+# Remove the columns LoggedActivitiesDistance and SedentaryActiveDistance
+daily_activity <- daily_activity %>% 
+  select(-LoggedActivitiesDistance, -SedentaryActiveDistance)
+
+# View the updated dataset
+head(daily_activity)
+```
+    ##          Id ActivityDate TotalSteps TotalDistance TrackerDistance VeryActiveDistance
+    ## 1 1503960366    4/12/2016      13162          8.50            8.50               1.88
+    ## 2 1503960366    4/13/2016      10735          6.97            6.97               1.57
+    ## 3 1503960366    4/14/2016      10460          6.74            6.74               2.44
+    ## 4 1503960366    4/15/2016       9762          6.28            6.28               2.14
+    ## 5 1503960366    4/16/2016      12669          8.16            8.16               2.71
+    ## 6 1503960366    4/17/2016       9705          6.48            6.48               3.19
+     ##  ModeratelyActiveDistance LightActiveDistance VeryActiveMinutes FairlyActiveMinutes
+    ## 1                     0.55                6.06                25                  13
+    ## 2                     0.69                4.71                21                  19
+    ## 3                     0.40                3.91                30                  11
+    ## 4                     1.26                2.83                29                  34
+    ## 5                     0.41                5.04                36                  10
+    ## 6                     0.78                2.51                38                  20
+    ##   LightlyActiveMinutes SedentaryMinutes Calories
+    ## 1                  328              728     1985
+    ## 2                  217              776     1797
+    ## 3                  181             1218     1776
+    ## 4                  209              726     1745
+    ## 5                  221              773     1863
+    ## 6                  164              539     1728
+##### *Adding a Weekday column to daily_activity to indicate the day of the week for each entry. Additionally, the ActivityDate column will be renamed to Date for consistency.*
+```r
+# Convert 'ActivityDate' to Date format, create 'Weekday' column, and rename 'ActivityDate' to 'Date'
+daily_activity <- daily_activity %>%
+  mutate(Weekday = weekdays(as.Date(ActivityDate, "%m/%d/%Y"))) %>%
+  rename(Date = ActivityDate)
+
+# View the updated dataset
+head(daily_activity)
+```
+    ##           Id      Date TotalSteps TotalDistance TrackerDistance VeryActiveDistance
+    ## 1 1503960366 4/12/2016      13162          8.50            8.50               1.88
+    ## 2 1503960366 4/13/2016      10735          6.97            6.97               1.57
+    ## 3 1503960366 4/14/2016      10460          6.74            6.74               2.44
+    ## 4 1503960366 4/15/2016       9762          6.28            6.28               2.14
+    ## 5 1503960366 4/16/2016      12669          8.16            8.16               2.71
+    ## 6 1503960366 4/17/2016       9705          6.48            6.48               3.19
+    ##   ModeratelyActiveDistance LightActiveDistance VeryActiveMinutes FairlyActiveMinutes
+    ## 1                     0.55                6.06                25                  13
+    ## 2                     0.69                4.71                21                  19
+    ## 3                     0.40                3.91                30                  11
+    ## 4                     1.26                2.83                29                  34
+    ## 5                     0.41                5.04                36                  10
+    ## 6                     0.78                2.51                38                  20
+    ##   LightlyActiveMinutes SedentaryMinutes Calories   Weekday
+    ## 1                  328              728     1985   Tuesday
+    ## 2                  217              776     1797 Wednesday
+    ## 3                  181             1218     1776  Thursday
+    ## 4                  209              726     1745    Friday
+    ## 5                  221              773     1863  Saturday
+    ## 6                  164              539     1728    Sunday
+##### *daily_activity and sleep_day together and order the data by Monday to Sunday*
+```r
+
 ```
 
-    ##       Id              SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
-    ## 1 1503960366 4/12/2016 12:00:00 AM                 1                327            346
-    ## 2 1503960366 4/13/2016 12:00:00 AM                 2                384            407
-    ## 3 1503960366 4/15/2016 12:00:00 AM                 1                412            442
-    ## 4 1503960366 4/16/2016 12:00:00 AM                 2                340            367
-    ## 5 1503960366 4/17/2016 12:00:00 AM                 1                700            712
-    ## 6 1503960366 4/19/2016 12:00:00 AM                 1                304            320
-##### *The 12:00:00 AM timestamp is redundant and unnecessary. Removing it will simplify the data, making it easier to analyze.*
+``` r
+head(hourly_steps)
+```
+    ##           Id          ActivityHour StepTotal
+    ## 1 1503960366 4/12/2016 12:00:00 AM       373
+    ## 2 1503960366  4/12/2016 1:00:00 AM       160
+    ## 3 1503960366  4/12/2016 2:00:00 AM       151
+    ## 4 1503960366  4/12/2016 3:00:00 AM         0
+    ## 5 1503960366  4/12/2016 4:00:00 AM         0
+    ## 6 1503960366  4/12/2016 5:00:00 AM         0
+##### *Seperating the time from the date*    
 ```r
-# Convert SleepDay to Date format (removes time part) 
-sleep_day$SleepDay <- as.Date(sleep_day$SleepDay, format="%m/%d/%Y")
-
-# Format the SleepDay to "MM/DD/YYYY" format
-sleep_day$SleepDay <- format(sleep_day$SleepDay, "%m/%d/%Y")
+# splitting ActivityHour into Date and Hour 
+hourly_steps <- hourly_steps %>% separate(ActivityHour, c("Date", "Hour"), sep = "^\\S*\\K")
 
 # Check the result
-head(sleep_day)
+head(hourly_steps)
 ```
-    ##           Id   SleepDay TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
-    ## 1 1503960366 2016-04-12                 1                327            346
-    ## 2 1503960366 2016-04-13                 2                384            407
-    ## 3 1503960366 2016-04-15                 1                412            442
-    ## 4 1503960366 2016-04-16                 2                340            367
-    ## 5 1503960366 2016-04-17                 1                700            712
-    ## 6 1503960366 2016-04-19                 1                304            320
-``` r
-head(weight)
-```
+    ##           Id      Date         Hour StepTotal
+    ## 1 1503960366 4/12/2016  12:00:00 AM       373
+    ## 2 1503960366 4/12/2016   1:00:00 AM       160
+    ## 3 1503960366 4/12/2016   2:00:00 AM       151
+    ## 4 1503960366 4/12/2016   3:00:00 AM         0
+    ## 5 1503960366 4/12/2016   4:00:00 AM         0
+    ## 6 1503960366 4/12/2016   5:00:00 AM         0
+
+
+
+
