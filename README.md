@@ -63,6 +63,7 @@ sleep_day <- read.csv("sleepDay_merged.csv")
 daily_activity <- read.csv("dailyActivity_merged.csv")
 weight <- read.csv("weightLogInfo_merged.csv")
 hourly_steps <- read.csv("hourlySteps_merged.csv")
+hourly_calories <- read.csv("hourlyCalories_merged.csv")
 ```
 --Count the Distinct IDs in Each Dataset to Determine the Number of Participants--
 ```r
@@ -70,21 +71,30 @@ n_distinct(sleep_day$Id)
 ```
     ## [1] 24 
 *sleep_day has 24 user data*
+
 ```r
 n_distinct(daily_activity$Id)
 ```
     ## [1] 33 
 *daily_activity has 33 user data*
+
 ```r
 n_distinct(hourly_step$Id)
 ```
     ## [1] 33 
 *hourly_steps has 33 user data*
+
 ```r
 n_distinct(weight$Id)
 ```
     ## [1] 8 
 *weight has 8 user data. Due to this limited sample size, it will be excluded.*
+
+```r
+n_distinct(hourly_calories$Id)
+```
+    ## [1] 33
+*hourly_calories has 33 user data*
 
 --View, Clean, and Merge Data Set--
 ``` r
@@ -98,7 +108,7 @@ head(sleep_day)
     ## 4 1503960366 4/16/2016 12:00:00 AM                 2                340            367
     ## 5 1503960366 4/17/2016 12:00:00 AM                 1                700            712
     ## 6 1503960366 4/19/2016 12:00:00 AM                 1                304            320
-##### *The 12:00:00 AM timestamp is redundant and unnecessary. Removing it will simplify the data. Additionally, the SleepDay column will be renamed to Date for consistency.*
+##### *The 12:00:00 AM timestamp is unnecessary and will be removed to simplify the data. The SleepDay column will also be renamed to Date for consistency, and a Weekday column will be added to indicate the day of the week.*
 ```r
 # Convert SleepDay to Date format (removes time part) 
 sleep_day$SleepDay <- as.Date(sleep_day$SleepDay, format="%m/%d/%Y")
@@ -109,18 +119,21 @@ sleep_day$SleepDay <- format(sleep_day$SleepDay, "%m/%d/%Y")
 # Rename the column 'SleepDay' to 'Date'
 colnames(sleep_day)[colnames(sleep_day) == "SleepDay"] <- "Date"
 
+# Add a Weekday column
+sleep_day$Weekday <- weekdays(as.Date(sleep_day$Date, format = "%m/%d/%Y"))
+
 # Check the result
 head(sleep_day)
 ```
-    ##           Id       Date TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
-    ## 1 1503960366 04/12/2016                 1                327            346
-    ## 2 1503960366 04/13/2016                 2                384            407
-    ## 3 1503960366 04/15/2016                 1                412            442
-    ## 4 1503960366 04/16/2016                 2                340            367
-    ## 5 1503960366 04/17/2016                 1                700            712
-    ## 6 1503960366 04/19/2016                 1                304            320
+    ##           Id       Date TotalSleepRecords TotalMinutesAsleep TotalTimeInBed   Weekday
+    ## 1 1503960366 04/12/2016                 1                327            346   Tuesday
+    ## 2 1503960366 04/13/2016                 2                384            407 Wednesday
+    ## 3 1503960366 04/15/2016                 1                412            442    Friday
+    ## 4 1503960366 04/16/2016                 2                340            367  Saturday
+    ## 5 1503960366 04/17/2016                 1                700            712    Sunday
+    ## 6 1503960366 04/19/2016                 1                304            320   Tuesday
 
-``` r
+```r
 head(daily_activity)
 ```
     ##    Id ActivityDate TotalSteps TotalDistance TrackerDistance LoggedActivitiesDistance
@@ -205,10 +218,6 @@ head(daily_activity)
     ## 4                  209              726     1745    Friday
     ## 5                  221              773     1863  Saturday
     ## 6                  164              539     1728    Sunday
-##### *daily_activity and sleep_day together and order the data by Monday to Sunday*
-```r
-
-```
 
 ``` r
 head(hourly_steps)
@@ -220,22 +229,250 @@ head(hourly_steps)
     ## 4 1503960366  4/12/2016 3:00:00 AM         0
     ## 5 1503960366  4/12/2016 4:00:00 AM         0
     ## 6 1503960366  4/12/2016 5:00:00 AM         0
-##### *Seperating the time from the date*    
+##### *Seperating the time from the date and adding Weekday Column*    
 ```r
 # splitting ActivityHour into Date and Hour 
 hourly_steps <- hourly_steps %>% separate(ActivityHour, c("Date", "Hour"), sep = "^\\S*\\K")
 
+# Convert the 'Date' column to Date format
+hourly_steps$Date <- mdy(hourly_steps$Date)  
+
+# Add the Weekday column based on the Date column
+hourly_steps$Weekday <- weekdays(hourly_steps$Date)
+
 # Check the result
 head(hourly_steps)
 ```
-    ##           Id      Date         Hour StepTotal
-    ## 1 1503960366 4/12/2016  12:00:00 AM       373
-    ## 2 1503960366 4/12/2016   1:00:00 AM       160
-    ## 3 1503960366 4/12/2016   2:00:00 AM       151
-    ## 4 1503960366 4/12/2016   3:00:00 AM         0
-    ## 5 1503960366 4/12/2016   4:00:00 AM         0
-    ## 6 1503960366 4/12/2016   5:00:00 AM         0
+    ##           Id       Date         Hour StepTotal Weekday
+    ## 1 1503960366 2016-04-12  12:00:00 AM       373 Tuesday
+    ## 2 1503960366 2016-04-12   1:00:00 AM       160 Tuesday
+    ## 3 1503960366 2016-04-12   2:00:00 AM       151 Tuesday
+    ## 4 1503960366 2016-04-12   3:00:00 AM         0 Tuesday
+    ## 5 1503960366 2016-04-12   4:00:00 AM         0 Tuesday
+    ## 6 1503960366 2016-04-12   5:00:00 AM         0 Tuesday
+
+```r
+head(hourly_calories)
+```
+    ##           Id          ActivityHour Calories
+    ## 1 1503960366 4/12/2016 12:00:00 AM       81
+    ## 2 1503960366  4/12/2016 1:00:00 AM       61
+    ## 3 1503960366  4/12/2016 2:00:00 AM       59
+    ## 4 1503960366  4/12/2016 3:00:00 AM       47
+    ## 5 1503960366  4/12/2016 4:00:00 AM       48
+    ## 6 1503960366  4/12/2016 5:00:00 AM       48
+##### *Seperating the time from the date*   
+```r
+# splitting ActivityHour into Date and Hour 
+hourly_calories <- hourly_calories %>% separate(ActivityHour, c("Date", "Hour"), sep = "^\\S*\\K")
+
+# Convert the 'Date' column to Date format
+hourly_calories$Date <- mdy(hourly_calories$Date)  
+
+# Check the result
+head(hourly_calories)
+```
+    ##           Id       Date         Hour Calories
+    ## 1 1503960366 2016-04-12  12:00:00 AM       81
+    ## 2 1503960366 2016-04-12   1:00:00 AM       61
+    ## 3 1503960366 2016-04-12   2:00:00 AM       59
+    ## 4 1503960366 2016-04-12   3:00:00 AM       47
+    ## 5 1503960366 2016-04-12   4:00:00 AM       48
+    ## 6 1503960366 2016-04-12   5:00:00 AM       48
+
+Converting the Id column in the data frames to a character type to ensure consistency and avoid potential issues during data manipulation or merging.
+```r
+sleep_day$Id <- as.character(sleep_day$Id)
+daily_activity$Id <- as.character(daily_activity$Id)
+hourly_steps$Id <- as.character(hourly_steps$Id)
+hourly_calories$Id <- as.character(hourly_calories$Id)
+```
+Count the duplicates and remove them if there are any.
+```r
+sum(duplicated(sleep_day))
+```
+    ## [1] 3 
+*Sleep_day has 3 duplicates*
+```r
+# remove the duplicate
+sleep_day <- sleep_day[!duplicated(sleep_day), ]
+
+# Count the number of duplicate to ensure there are none
+sum(duplicated(sleep_day))
+```
+```r
+sum(duplicated(daily_activity))
+```
+    ## [1] 0
+*daily_activity has 0 duplicates*
+```r
+sum(duplicated(hourly_steps))    
+```
+    ## [1] 0
+*hourly_steps has 0 duplicates*
+
+```r
+sum(duplicated(hourly_calories))
+```
+    ## [1] 0
+*hourly_calories has 0 duplicates*
+
+## ANALYZE
+
+--What Days are People Most Active--
+
+```r
+# Calculate total TotalSteps by Weekday
+total_steps_by_weekday <- daily_activity %>%
+  group_by(Weekday) %>%
+  summarise(TotalSteps = sum(TotalSteps))
+
+# Reorder the Weekday column to ensure the days are in the correct order
+total_steps_by_weekday$Weekday <- factor(total_steps_by_weekday$Weekday, 
+                                 levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+# Create the bar chart
+ggplot(total_steps_by_weekday, aes(x = Weekday, y = TotalSteps, fill = Weekday)) +
+  geom_bar(stat = "identity") +  # Bar chart
+  geom_text(aes(label = round(TotalSteps, 1)), vjust = -0.3) +  # Label on top of bars
+  ylab("Total Steps") +
+  ggtitle("Total Steps by Weekday") 
+
+```
+![image](https://github.com/user-attachments/assets/b5de8237-d8b0-441b-b1ea-431e810b0099)
+
+The graph indicates that activity levels are highest on Tuesdays, followed by Wednesdays and Thursdays.
+
+-Average Total Steps Per Day--
+```r
+# Calculate average TotalSteps by Weekday
+average_steps_by_weekday <- daily_activity %>%
+  group_by(Weekday) %>%
+  summarise(AverageSteps = mean(TotalSteps))
+
+# Create the bar chart
+ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekday)) +
+  geom_bar(stat = "identity") +  # Bar chart
+  geom_text(aes(label = round(AverageSteps, 1)), vjust = -0.3) +  # Label on top of bars
+  ylab("Average Total Steps") +
+  ggtitle("Average Total Steps by Weekday") 
+````
+![image](https://github.com/user-attachments/assets/9471e2a1-ca1f-46f4-84d1-33f836bbab65)
 
 
+--At what hours are the users most active--
 
+```r
+# Load the scales package
+library(scales)
 
+# Remove any leading/trailing spaces
+hourly_steps$Hour <- trimws(hourly_steps$Hour)
+
+# Reorder the Hour column to ensure the times are in the correct order
+hourly_steps$Hour <- factor(hourly_steps$Hour, 
+                                 levels = c("12:00:00 AM", "1:00:00 AM", "2:00:00 AM", "3:00:00 AM", 
+                "4:00:00 AM", "5:00:00 AM", "6:00:00 AM", "7:00:00 AM", 
+                "8:00:00 AM", "9:00:00 AM", "10:00:00 AM", "11:00:00 AM", 
+                "12:00:00 PM", "1:00:00 PM", "2:00:00 PM", "3:00:00 PM", 
+                "4:00:00 PM", "5:00:00 PM", "6:00:00 PM", "7:00:00 PM", 
+                "8:00:00 PM", "9:00:00 PM", "10:00:00 PM", "11:00:00 PM"))
+
+# Plot the total steps per hour with formatted y-axis labels
+ggplot(data = hourly_steps, aes(x = Hour, y = StepTotal)) +
+  geom_bar(stat = "identity", fill = "purple") +  
+  labs(
+    title = "Total Steps by Hour",
+    x = "Hour of the Day",
+    y = "Total Steps"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
+  scale_y_continuous(labels = label_comma())  
+```
+![image](https://github.com/user-attachments/assets/b47ecd28-99ed-4c11-ad37-85e5fdcbfef9)
+
+The graph indicates that users tend to be most active between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
+
+--At what hours do users burn the most calories--
+```r
+# Load the scales package
+library(scales)
+
+# Remove any leading/trailing spaces
+hourly_calories$Hour <- trimws(hourly_calories$Hour)
+
+# Reorder the Hour column to ensure the times are in the correct order
+hourly_calories$Hour <- factor(hourly_calories$Hour, 
+                                 levels = c("12:00:00 AM", "1:00:00 AM", "2:00:00 AM", "3:00:00 AM", 
+                "4:00:00 AM", "5:00:00 AM", "6:00:00 AM", "7:00:00 AM", 
+                "8:00:00 AM", "9:00:00 AM", "10:00:00 AM", "11:00:00 AM", 
+                "12:00:00 PM", "1:00:00 PM", "2:00:00 PM", "3:00:00 PM", 
+                "4:00:00 PM", "5:00:00 PM", "6:00:00 PM", "7:00:00 PM", 
+                "8:00:00 PM", "9:00:00 PM", "10:00:00 PM", "11:00:00 PM"))
+
+# Plot the calories per hour with formatted y-axis labels
+ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
+  geom_bar(stat = "identity", fill = "purple") +  
+  labs(
+    title = "Calories burn by Hour",
+    x = "Hour of the Day",
+    y = "Calories"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
+  scale_y_continuous(labels = label_comma())  
+```
+
+![image](https://github.com/user-attachments/assets/0cf4a9f8-6dfa-474f-9688-711e69c7cb6c)
+
+The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
+It matches with the Total Steps by Hour graph.
+
+-- Is there a correlation between total steps and calories?--
+```r
+# Create the scatter plot with a regression line
+ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
+  geom_point(color = "pink", alpha = 0.6) +  # Scatter plot with purple points
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
+  labs(
+    title = "Total Steps and Calories",
+    x = "Total Steps",
+    y = "Calories"
+  ) +
+  theme_minimal()
+```
+![image](https://github.com/user-attachments/assets/d73d10a4-5c0b-47b6-b194-d88240c70f9c)
+
+```r
+ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
+  geom_point(color = "pink", alpha = 0.6) +  # Scatter plot with purple points
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
+  labs(
+    title = "Total Distance and Calories",
+    x = "Total Distance",
+    y = "Calories"
+  ) +
+  theme_minimal()
+```
+![image](https://github.com/user-attachments/assets/693f640d-a131-4fe7-b087-8ef9cfa0793e)
+
+There is a positive correlation between total steps, total distance and calories. The more steps are taken the more calories are burned.
+
+--Average Calories Burned Per Day--
+```r
+# Calculate average Calories by Weekday
+average_calories_by_weekday <- daily_activity %>%
+  group_by(Weekday) %>%
+  summarise(AverageCalories = mean(Calories))
+
+# Create the bar chart
+ggplot(average_calories_by_weekday, aes(x = Weekday, y = AverageCalories, fill = Weekday)) +
+  geom_bar(stat = "identity") +  # Bar chart
+  geom_text(aes(label = round(AverageCalories, 1)), vjust = -0.3) +  # Label on top of bars
+  ylab("Average Calories") +
+  ggtitle("Average Calories by Weekday")
+```
+![image](https://github.com/user-attachments/assets/365d2388-bdcf-442d-9f87-a326aff031f5)
+
+--Summary of Weekday, TotalSteps, and TotalDistance--
