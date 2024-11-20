@@ -35,7 +35,7 @@ This data, collected in 2016 from 30 participants, may no longer reflect current
 **Cited**: Data obtained from Amazon Mechanical Turk.
 
 ## PROCESS
---Load Packages--
+### Load Packages
 ``` r
 install.packages('tidyverse')
 install.packages('skimr')
@@ -55,7 +55,7 @@ library(readr) #save csv
 library(plotly) #pie chart
 library(lm.beta) 
 ```
---Load CSV files--
+### Load CSV files
 ``` r
 setwd("/cloud/project")
 
@@ -65,7 +65,7 @@ weight <- read.csv("weightLogInfo_merged.csv")
 hourly_steps <- read.csv("hourlySteps_merged.csv")
 hourly_calories <- read.csv("hourlyCalories_merged.csv")
 ```
---Count the Distinct IDs in Each Dataset to Determine the Number of Participants--
+### Count the Distinct IDs in Each Dataset to Determine the Number of Participants
 ```r
 n_distinct(sleep_day$Id)
 ```
@@ -96,7 +96,7 @@ n_distinct(hourly_calories$Id)
     ## [1] 33
 *hourly_calories has 33 user data*
 
---View, Clean, and Merge Data Set--
+### View, Clean, and Merge Data Set
 ``` r
 head(sleep_day)
 ```
@@ -319,7 +319,7 @@ sum(duplicated(hourly_calories))
 
 ## ANALYZE
 
---What Days are People Most Active--
+### What Days are People Most Active
 
 ```r
 # Calculate total TotalSteps by Weekday
@@ -343,7 +343,7 @@ ggplot(total_steps_by_weekday, aes(x = Weekday, y = TotalSteps, fill = Weekday))
 
 The graph indicates that activity levels are highest on Tuesday, followed by Wednesday and Thursday.
 
--Average Total Steps Per Day--
+### Average Total Steps Per Day
 ```r
 # Calculate average TotalSteps by Weekday
 average_steps_by_weekday <- daily_activity %>%
@@ -361,7 +361,7 @@ ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekd
 
 On average, the highest number of steps are taken on Saturday, followed by Tuesday and Monday.
 
---At what hours are the users most active--
+### At what hours are the users most active
 
 ```r
 # Load the scales package
@@ -395,7 +395,7 @@ ggplot(data = hourly_steps, aes(x = Hour, y = StepTotal)) +
 
 The graph indicates that users tend to be most active between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 
---At what hours do users burn the most calories--
+### At what hours do users burn the most calories
 ```r
 # Load the scales package
 library(scales)
@@ -430,7 +430,7 @@ ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
 The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 It matches with the Total Steps by Hour graph.
 
---Exploring the Relationship Between Calories, Total Steps, and Total Distance--
+### Exploring the Relationship Between Calories, Total Steps, and Total Distance
 ```r
 # Create the scatter plot with a regression line
 ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
@@ -460,7 +460,7 @@ ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
 
 The two graphs show a positive correlation. As the number of steps and the distance traveled increase, calorie burn also rises.
 
---Average Calories Per Day--
+### Average Calories Per Day 
 ```r
 # Calculate average Calories by Weekday
 average_calories_by_weekday <- daily_activity %>%
@@ -478,7 +478,7 @@ ggplot(average_calories_by_weekday, aes(x = Weekday, y = AverageCalories, fill =
 
 The graph shows that users burn an average of 2,100 to 2,300 calories per day. The WHO recommends that adults consume approximately 2,000 calories daily.
 
---What Days do Users Sleep the Most--
+### What Days do Users Sleep the Most
 ```r
 # Calculate total TotalMinutesAsleep by Weekday
 total_sleep_by_weekday <- sleep_day %>%
@@ -500,7 +500,7 @@ ggplot(total_sleep_by_weekday, aes(x = Weekday, y = TotalMinutesAsleep, fill = W
 
 Users sleep the most on Wednesday then Tuesday and Thursday. 
 
---On Average How Many Hours Do Users Sleep Per Day--
+### On Average How Many Hours Do Users Sleep Per Day 
 
 ```r
 # Convert minutes to hours and calculate the average hours per weekday
@@ -524,7 +524,7 @@ ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekda
 
 On average users sleep between 6.7 hours to 7.5 hrs. Users sleep more on Sunday then Wednesday.
 
---The Average Amount of Sleep User Gets--
+### The Average Amount of Sleep User Gets
 ```r
 # Calculate the average hours asleep per Id
 average_sleep_per_id <- sleep_day %>%
@@ -572,7 +572,7 @@ summarise(Count = n())
 
 NIH reccomends adults should get between 7 to 9 hrs of sleep daily. Only 10 users are getting the apporiate amount of sleep.
 
---The Percentage Of Users Getting Different Hours of Sleep--
+### The Percentage Of Users Getting Different Hours of Sleep
 ```r
 # Create categories for sleep hours
 sleep_categories <- average_sleep_per_id %>%
@@ -600,18 +600,19 @@ ggplot(sleep_summary, aes(x = "", y = Percentage, fill = SleepCategory)) +
 
 41.7% of users are getting the recommended amount of sleep, while 54.2% are getting less than the recommended hours, which is more than half of the users.
 
-
-
-
---Summary of TotalSteps, TotalDistance, Calories, and TotalMinutesAsleep--
+### Summary of TotalSteps, TotalDistance, Calories, and TotalMinutesAsleep
 ```r
-merged_data %>%
+daily_activity %>%
   dplyr::select(Weekday,
          TotalSteps,
          TotalDistance,         
          Calories) %>%
   summary()
-``
+
+sleep_day %>%
+  dplyr::select(TotalMinutesAsleep) %>%
+  summary()   
+```
     ##      Weekday      TotalSteps    TotalDistance       Calories   
     ##   Monday   :120   Min.   :    0   Min.   : 0.000   Min.   :   0  
     ##   Tuesday  :152   1st Qu.: 3790   1st Qu.: 2.620   1st Qu.:1828  
@@ -619,4 +620,34 @@ merged_data %>%
     ##   Thursday :147   Mean   : 7638   Mean   : 5.490   Mean   :2304  
     ##   Friday   :126   3rd Qu.:10727   3rd Qu.: 7.713   3rd Qu.:2793  
     ##   Saturday :124   Max.   :36019   Max.   :28.030   Max.   :4900  
-    ##   Sunday   :121      
+    ##   Sunday   :121
+
+    ##  TotalMinutesAsleep
+    ##  Min.   : 58.0     
+    ##  1st Qu.:361.0     
+    ##  Median :432.5     
+    ##  Mean   :419.2     
+    ##  3rd Qu.:490.0     
+    ##  Max.   :796.0   
+
+### Summary of Very Active Minutes, Fairly Active Minutes, Lightly Active Minutes, and Sedentary Minutes
+
+```r
+daily_activity %>%
+  dplyr::select(
+         VeryActiveMinutes,
+         FairlyActiveMinutes,
+         LightlyActiveMinutes,
+         SedentaryMinutes,         
+         ) %>%
+  summary()
+```
+    ##  VeryActiveMinutes FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes
+    ##  Min.   :  0.00    Min.   :  0.00      Min.   :  0.0        Min.   :   0.0  
+    ##  1st Qu.:  0.00    1st Qu.:  0.00      1st Qu.:127.0        1st Qu.: 729.8  
+    ##  Median :  4.00    Median :  6.00      Median :199.0        Median :1057.5  
+    ##  Mean   : 21.16    Mean   : 13.56      Mean   :192.8        Mean   : 991.2  
+    ##  3rd Qu.: 32.00    3rd Qu.: 19.00      3rd Qu.:264.0        3rd Qu.:1229.5  
+    ##  Max.   :210.00    Max.   :143.00      Max.   :518.0        Max.   :1440.0  
+
+    
