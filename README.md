@@ -361,7 +361,7 @@ ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekd
 
 On average, the highest number of steps are taken on Saturday, followed by Tuesday and Monday.
 
-### At what hours are the users most active
+### At What Hours Are the Users Most Active
 
 ```r
 # Load the scales package
@@ -395,7 +395,7 @@ ggplot(data = hourly_steps, aes(x = Hour, y = StepTotal)) +
 
 The graph indicates that users tend to be most active between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 
-### At what hours do users burn the most calories
+### At What Hours Do Users Burn the Most Calories
 ```r
 # Load the scales package
 library(scales)
