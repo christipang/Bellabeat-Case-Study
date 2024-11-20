@@ -341,7 +341,7 @@ ggplot(total_steps_by_weekday, aes(x = Weekday, y = TotalSteps, fill = Weekday))
 ```
 ![image](https://github.com/user-attachments/assets/b5de8237-d8b0-441b-b1ea-431e810b0099)
 
-The graph indicates that activity levels are highest on Tuesdays, followed by Wednesdays and Thursdays.
+The graph indicates that activity levels are highest on Tuesday, followed by Wednesday and Thursday.
 
 -Average Total Steps Per Day--
 ```r
@@ -359,6 +359,7 @@ ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekd
 ````
 ![image](https://github.com/user-attachments/assets/9471e2a1-ca1f-46f4-84d1-33f836bbab65)
 
+On average, the highest number of steps are taken on Saturday, followed by Tuesday and Monday.
 
 --At what hours are the users most active--
 
@@ -429,7 +430,7 @@ ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
 The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 It matches with the Total Steps by Hour graph.
 
--- Is there a correlation between total steps and calories?--
+--Exploring the Relationship Between Calories, Total Steps, and Total Distance--
 ```r
 # Create the scatter plot with a regression line
 ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
@@ -457,9 +458,9 @@ ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
 ```
 ![image](https://github.com/user-attachments/assets/693f640d-a131-4fe7-b087-8ef9cfa0793e)
 
-There is a positive correlation between total steps, total distance and calories. The more steps are taken the more calories are burned.
+The two graphs show a positive correlation. As the number of steps and the distance traveled increase, calorie burn also rises.
 
---Average Calories Burned Per Day--
+--Average Calories Per Day--
 ```r
 # Calculate average Calories by Weekday
 average_calories_by_weekday <- daily_activity %>%
@@ -475,4 +476,147 @@ ggplot(average_calories_by_weekday, aes(x = Weekday, y = AverageCalories, fill =
 ```
 ![image](https://github.com/user-attachments/assets/365d2388-bdcf-442d-9f87-a326aff031f5)
 
---Summary of Weekday, TotalSteps, and TotalDistance--
+The graph shows that users burn an average of 2,100 to 2,300 calories per day. The WHO recommends that adults consume approximately 2,000 calories daily.
+
+--What Days do Users Sleep the Most--
+```r
+# Calculate total TotalMinutesAsleep by Weekday
+total_sleep_by_weekday <- sleep_day %>%
+  group_by(Weekday) %>%
+  summarise(TotalMinutesAsleep = sum(TotalMinutesAsleep))
+
+# Reorder the Weekday column to ensure the days are in the correct order
+total_sleep_by_weekday$Weekday <- factor(total_sleep_by_weekday$Weekday, 
+                                 levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+# Create the bar chart
+ggplot(total_sleep_by_weekday, aes(x = Weekday, y = TotalMinutesAsleep, fill = Weekday)) +
+  geom_bar(stat = "identity") +  # Bar chart
+  geom_text(aes(label = round(TotalMinutesAsleep, 1)), vjust = -0.3) +  # Label on top of bars
+  ylab("Total Minutes Asleep") +
+  ggtitle("Total Minutes Asleep by Weekday") 
+```
+![image](https://github.com/user-attachments/assets/242cbeb4-b198-4cbb-8ea5-1f2837ee4123)
+
+Users sleep the most on Wednesday then Tuesday and Thursday. 
+
+--On Average How Many Hours Do Users Sleep Per Day--
+
+```r
+# Convert minutes to hours and calculate the average hours per weekday
+sleep_day_average <- sleep_day %>%
+  mutate(HoursAsleep = TotalMinutesAsleep / 60) %>%
+  group_by(Weekday) %>%
+  summarise(AverageHoursAsleep = mean(HoursAsleep))
+
+# Reorder the Weekday column to ensure the days are in the correct order
+sleep_day_average$Weekday <- factor(sleep_day_average$Weekday, 
+                                 levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+
+# Create the bar chart
+ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekday)) +
+  geom_bar(stat = "identity") +  # Bar chart
+  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3) +  # Add labels
+  ylab("Average Hours Asleep") +
+  ggtitle("Average Hours Asleep by Weekday") 
+```
+![image](https://github.com/user-attachments/assets/076b8ee1-ec11-4abb-acb4-7a8c56cdf966)
+
+On average users sleep between 6.7 hours to 7.5 hrs. Users sleep more on Sunday then Wednesday.
+
+--The Average Amount of Sleep User Gets--
+```r
+# Calculate the average hours asleep per Id
+average_sleep_per_id <- sleep_day %>%
+  group_by(Id) %>%
+  summarise(AverageHoursAsleep = mean(TotalMinutesAsleep) / 60)  # Convert minutes to hours
+
+# Create the bar chart
+ggplot(average_sleep_per_id, aes(x = Id, y = AverageHoursAsleep, fill = Id)) +
+  geom_bar(stat = "identity",) +  # Bar chart
+  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3, size = 3) +  # Add labels
+  ylab("Average Hours Asleep") +
+  ggtitle("Average Hours Asleep Per User") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels
+```
+![image](https://github.com/user-attachments/assets/69466790-c062-40e7-8c7e-6e4a9fb061ee)
+
+There are three users who only got on average 1, 1.1, and 2.1 hours of sleep. There is one user who gets 10 hours of sleep. 
+```r
+# Count the number of users getting less than 7 hours of sleep
+average_sleep_per_id %>%
+filter(AverageHoursAsleep < 7) %>%
+summarise(Count = n())
+```
+    ##     13
+*There are 13 users who are getting less than 7 hours of sleep on average*
+
+```r
+# Count the number of users getting between 7 to 9 hours of sleep
+average_sleep_per_id %>%
+filter(AverageHoursAsleep >= 7 & AverageHoursAsleep <= 9) %>%
+summarise(Count = n())
+```
+    ##     10
+*There are 10 users who are getting between 7 to 9 hours of sleep*
+
+```r
+# Count the number of users getting more than 9 hours of sleep
+average_sleep_per_id %>%
+filter(AverageHoursAsleep > 9) %>%
+summarise(Count = n())
+```
+    ##     1
+*There is 1 user who is getting more than 9 hours of sleep on average*
+
+NIH reccomends adults should get between 7 to 9 hrs of sleep daily. Only 10 users are getting the apporiate amount of sleep.
+
+--The Percentage Of Users Getting Different Hours of Sleep--
+```r
+# Create categories for sleep hours
+sleep_categories <- average_sleep_per_id %>%
+  mutate(SleepCategory = case_when(
+    AverageHoursAsleep < 7 ~ "Less than 7 hours",
+    AverageHoursAsleep >= 7 & AverageHoursAsleep <= 9 ~ "7 to 9 hours",
+    AverageHoursAsleep > 9 ~ "More than 9 hours"
+  ))
+
+# Summarize the counts by sleep category
+sleep_summary <- sleep_categories %>%
+  group_by(SleepCategory) %>%
+  summarise(Count = n()) %>%
+  mutate(Percentage = (Count / sum(Count)) * 100)
+
+# Create the pie chart
+ggplot(sleep_summary, aes(x = "", y = Percentage, fill = SleepCategory)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +  # Create the pie chart
+  labs(title = "Percentage of Users Getting Different Hours of Sleep") +
+  theme_void() +  # Remove axes and grid lines
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), position = position_stack(vjust = 0.5))  # Add percentages as labels
+```
+![image](https://github.com/user-attachments/assets/7ae4f52c-843a-4fd2-80a8-e7b8dcd343ee)
+
+41.7% of users are getting the recommended amount of sleep, while 54.2% are getting less than the recommended hours, which is more than half of the users.
+
+
+
+
+--Summary of TotalSteps, TotalDistance, Calories, and TotalMinutesAsleep--
+```r
+merged_data %>%
+  dplyr::select(Weekday,
+         TotalSteps,
+         TotalDistance,         
+         Calories) %>%
+  summary()
+``
+    ##      Weekday      TotalSteps    TotalDistance       Calories   
+    ##   Monday   :120   Min.   :    0   Min.   : 0.000   Min.   :   0  
+    ##   Tuesday  :152   1st Qu.: 3790   1st Qu.: 2.620   1st Qu.:1828  
+    ##   Wednesday:150   Median : 7406   Median : 5.245   Median :2134  
+    ##   Thursday :147   Mean   : 7638   Mean   : 5.490   Mean   :2304  
+    ##   Friday   :126   3rd Qu.:10727   3rd Qu.: 7.713   3rd Qu.:2793  
+    ##   Saturday :124   Max.   :36019   Max.   :28.030   Max.   :4900  
+    ##   Sunday   :121      
