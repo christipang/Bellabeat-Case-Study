@@ -650,4 +650,228 @@ daily_activity %>%
     ##  3rd Qu.: 32.00    3rd Qu.: 19.00      3rd Qu.:264.0        3rd Qu.:1229.5  
     ##  Max.   :210.00    Max.   :143.00      Max.   :518.0        Max.   :1440.0  
 
+### Percentage of Active Minutes    
+```r
+# Summarize the total active minutes for each category
+activity_summary_minute <- daily_activity %>%
+  summarise(
+    VeryActiveMinutes = sum(VeryActiveMinutes),
+    FairlyActiveMinutes = sum(FairlyActiveMinutes),
+    LightlyActiveMinutes = sum(LightlyActiveMinutes),
+    SedentaryMinutes = sum(SedentaryMinutes)
+  ) %>%
+  gather(key = "ActivityCategory", value = "TotalMinutes") %>%  # Convert to long format
+  mutate(Percentage = (TotalMinutes / sum(TotalMinutes)) * 100)  # Calculate percentages
+
+# Create the pie chart
+plot_ly(
+  data = activity_summary_minutes,
+  labels = ~ActivityCategory,
+  values = ~Percentage,
+  type = 'pie',
+  textposition = 'outside',
+  textinfo = 'label+percent'
+) %>%
+  layout(
+    title = 'Percentage of Active Minutes by Category',
+    xaxis = list(domain = c(0.2, 1)),  # This is the correct structure
+    margin = list(l = 100, r = 100, t = 50, b = 50)
+  )    
+```
+![image](https://github.com/user-attachments/assets/4971ae36-b172-41cb-909f-8b2c22d4b862)
+
+Most users (81.3%) spent the majority of their activity in sedentary minutes. A smaller portion of users spent 15.8% of their time in lightly active minutes, 1.11% in fairly active minutes, and 1.74% in very active minutes.
+
+### Average Active Minutes
+```r
+daily_activity %>%
+  summarise(
+    AverageVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE),
+    AverageFairlyActiveMinutes = mean(FairlyActiveMinutes, na.rm = TRUE),
+    AverageLightlyActiveMinutes = mean(LightlyActiveMinutes, na.rm = TRUE),
+    AverageSedentaryMinutes = mean(SedentaryMinutes, na.rm = TRUE)
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "ActivityCategory",
+    values_to = "AverageMinutes"
+  ) %>%
+  mutate(
+    Hours = floor(AverageMinutes / 60),  # Calculate total hours
+    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
+    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
+  )
+```
+    ##   ActivityCategory            AverageMinutes Hours Minutes TimeLabel
+    ##   <chr>                                <dbl> <dbl>   <dbl> <chr>    
+    ## 1 AverageVeryActiveMinutes              21.2     0      21 0h 21m   
+    ## 2 AverageFairlyActiveMinutes            13.6     0      14 0h 14m   
+    ## 3 AverageLightlyActiveMinutes          193.      3      13 3h 13m   
+    ## 4 AverageSedentaryMinutes              991.     16      31 16h 31m  
     
+
+
+On average, users spend around 16 hours a day in sedentary activity, 3 hours in lightly active minutes, 14 minutes in fairly active minutes, and 21 minutes in very active minutes. [WHO](https://www.who.int/news/item/25-11-2020-every-move-counts-towards-better-health-says-who) recommends that adults engage in at least 150 to 300 minutes of moderate to vigorous aerobic activity each week.
+```r
+daily_activity %>%
+  summarise(
+    AverageVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE),
+    AverageFairlyActiveMinutes = mean(FairlyActiveMinutes, na.rm = TRUE),
+    AverageLightlyActiveMinutes = mean(LightlyActiveMinutes, na.rm = TRUE),
+    AverageSedentaryMinutes = mean(SedentaryMinutes, na.rm = TRUE)
+  ) %>%
+  summarise(
+    # Calculate the weekly averages by multiplying 7 days
+    WeeklyAverageVeryActiveMinutes = AverageVeryActiveMinutes * 7, 
+    WeeklyAverageFairlyActiveMinutes = AverageFairlyActiveMinutes * 7, 
+    WeeklyAverageLightlyActiveMinutes = AverageLightlyActiveMinutes * 7,
+    WeeklyAverageSedentaryMinutes = AverageSedentaryMinutes * 7
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "ActivityCategory",
+    values_to = "AverageMinutes"
+  ) %>%
+  mutate(
+    Hours = floor(AverageMinutes / 60),  # Calculate total hours
+    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
+    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
+  )
+```
+    ## ActivityCategory                  AverageMinutes Hours Minutes TimeLabel
+    ##   <chr>                                      <dbl> <dbl>   <dbl> <chr>    
+    ## 1 WeeklyAverageVeryActiveMinutes             148.      2      28 2h 28m   
+    ## 2 WeeklyAverageFairlyActiveMinutes            95.0     1      35 1h 35m   
+    ## 3 WeeklyAverageLightlyActiveMinutes         1350.     22      30 22h 30m  
+    ## 4 WeeklyAverageSedentaryMinutes             6938.    115      38 115h 38m 
+
+daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE),
+    AvgFairlyActiveMinutes = mean(FairlyActiveMinutes, na.rm = TRUE),
+    AvgLightlyActiveMinutes = mean(LightlyActiveMinutes, na.rm = TRUE),
+    AvgSedentaryMinutes = mean(SedentaryMinutes, na.rm = TRUE)
+  )%>%
+  summarise(
+    # Calculate the weekly averages by multiplying 7 days
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7, 
+    WeeklyAverageFairlyActiveMinutes = AvgFairlyActiveMinutes * 7, 
+    WeeklyAverageLightlyActiveMinutes = AvgLightlyActiveMinutes * 7,
+    WeeklyAverageSedentaryMinutes = AvgSedentaryMinutes * 7
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "ActivityCategory",
+    values_to = "AverageMinutes"
+  ) %>%
+  mutate(
+    Hours = floor(AverageMinutes / 60),  # Calculate total hours
+    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
+    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
+  )
+
+### Weekly Average on Very Active Minutes Per User
+
+daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
+  ) %>%
+  mutate(
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+  ) %>%
+  ggplot(aes(x = factor(Id), y = WeeklyAverageVeryActiveMinutes, fill = factor(Id))) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Weekly Average Very Active Minutes by User",
+    x = "User ID",
+    y = "Weekly Average on Very Active Minutes"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_fill_viridis_d(option = "plasma", guide = "none")
+
+![image](https://github.com/user-attachments/assets/220da5fb-b8fc-404c-92a3-4cf43965eada)
+```r
+# Count users with Weekly Average Very Active Minutes under 150
+daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
+  ) %>%
+  mutate(
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+  ) %>%
+  filter(WeeklyAverageVeryActiveMinutes < 150) %>%
+  summarise(count = n())
+```
+    ##    22
+*There are 22 users who get less than 150 hours of very active exercise minutes per week.*
+
+```r
+# Count users with Weekly Average Very Active Minutes between 150 and 300
+daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
+  ) %>%
+  mutate(
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+  ) %>%
+  filter(WeeklyAverageVeryActiveMinutes >= 150 & WeeklyAverageVeryActiveMinutes <= 300) %>%
+  summarise(count = n())
+```
+    ##    7
+*There are 7 users who are getting between 150 and 300 hours of very active exercise minutes per week.*
+
+```r
+# Count users with Weekly Average Very Active Minutes over 300
+daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
+  ) %>%
+  mutate(
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+  ) %>%
+  filter(WeeklyAverageVeryActiveMinutes > 300) %>%
+  summarise(count = n())
+```
+    ##    4
+*There are 4 users who get more than 150 hours of very active exercise minutes per week.*
+### Percentage of Users by Weekly Very Active Minutes
+```r
+user_counts <- daily_activity %>%
+  group_by(Id) %>%
+  summarise(
+    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
+  ) %>%
+  mutate(
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+  ) %>%
+  summarise(
+    Under150 = sum(WeeklyAverageVeryActiveMinutes < 150),
+    Between150And300 = sum(WeeklyAverageVeryActiveMinutes >= 150 & WeeklyAverageVeryActiveMinutes <= 300),
+    Over300 = sum(WeeklyAverageVeryActiveMinutes > 300)
+  ) %>%
+  gather(key = "ActivityCategory", value = "Count") %>%  # Convert to long format
+  mutate(Percentage = (Count / sum(Count)) * 100)  # Calculate percentages
+
+# Create the pie chart using the summarized data
+plot_ly(
+  data = user_counts,  # Use the manipulated data
+  labels = ~ActivityCategory,
+  values = ~Percentage,
+  type = 'pie',
+  textposition = 'outside',
+  textinfo = 'label+percent'
+) %>%
+  layout(
+    title = 'Percentage of Users by Weekly Very Active Minutes',
+    margin = list(l = 100, r = 100, t = 50, b = 50)
+  )
+```
+![image](https://github.com/user-attachments/assets/5acb950a-1838-440d-afd2-2dd1657ca31b)
+
+Approximately 66.7% of users are not meeting the recommended weekly exercise target. About 21.2% are within the recommended range, while 12.1% are exceeding 300 minutes of exercise per week. 
