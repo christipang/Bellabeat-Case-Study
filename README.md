@@ -53,7 +53,8 @@ library(ggplot2) #visualize data
 library(cowplot) #grid the plot
 library(readr) #save csv 
 library(plotly) #pie chart
-library(lm.beta) 
+library(lm.beta)
+library(scales)
 ```
 ### Load CSV files
 ``` r
@@ -414,10 +415,10 @@ hourly_calories$Hour <- factor(hourly_calories$Hour,
 
 # Plot the calories per hour with formatted y-axis labels
 ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
-  geom_bar(stat = "identity", fill = "purple") +  
+  geom_bar(stat = "identity", fill = "skyblue") +  
   labs(
-    title = "Calories burn by Hour",
-    x = "Hour of the Day",
+    title = "Calories Burn by Hour",
+    x = "Hours of the Day",
     y = "Calories"
   ) +
   theme_minimal() +
@@ -425,10 +426,33 @@ ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
   scale_y_continuous(labels = label_comma())  
 ```
 
-![image](https://github.com/user-attachments/assets/0cf4a9f8-6dfa-474f-9688-711e69c7cb6c)
+![image](https://github.com/user-attachments/assets/122bff41-5beb-4644-ab10-331f08a03c11)
+
 
 The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 It matches with the Total Steps by Hour graph.
+
+### On Average Users Burn Calories By Hour
+```r
+# Calculate average calories burned per hour
+average_calories_by_hour <- hourly_calories %>%
+  group_by(Hour) %>%
+  summarise(AvgCalories = mean(Calories, na.rm = TRUE))
+
+# Create the bar chart
+ggplot(data = average_calories_by_hour, aes(x = Hour, y = AvgCalories)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(
+    title = "Average Calories Burned by Hour",
+    x = "Hour of the Day",
+    y = "Average Calories"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_y_continuous(labels = scales::label_comma())  # Format y-axis with commas
+```
+![image](https://github.com/user-attachments/assets/44ec5193-936f-4809-9be7-1e640653d0db)
+
 
 ### Exploring the Relationship Between Calories, Total Steps, and Total Distance
 ```r
