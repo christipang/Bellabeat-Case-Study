@@ -432,27 +432,48 @@ ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
 The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
 It matches with the Total Steps by Hour graph.
 
-### On Average Users Burn Calories By Hour
+### Average Users Burn Calories By Hour
 ```r
 # Calculate average calories burned per hour
 average_calories_by_hour <- hourly_calories %>%
   group_by(Hour) %>%
-  summarise(AvgCalories = mean(Calories, na.rm = TRUE))
-
+  summarise(AvgCalories = mean(Calories, na.rm = TRUE)) %>%
+  mutate(
+    Highlight = ifelse(Hour %in% c("12:00:00 PM", "1:00:00 PM", "2:00:00 PM", 
+                                   "5:00:00 PM", "6:00:00 PM", "7:00:00 PM"), "Highlight", "Normal"),
+    Stagger = ifelse(row_number() %% 2 == 0, -0.7, 0.7)  # Adjust stagger position further
+  )
 # Create the bar chart
-ggplot(data = average_calories_by_hour, aes(x = Hour, y = AvgCalories)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
+ggplot(data = average_calories_by_hour, aes(x = Hour, y = AvgCalories, fill = Highlight)) +
+  geom_bar(stat = "identity") +
+  geom_text(
+    data = filter(average_calories_by_hour, Highlight == "Highlight"),
+    aes(label = round(AvgCalories, 1), vjust = Stagger),  # Apply staggered positions
+    size = 3,                 # Adjust text size
+    nudge_y = 5               # Move the labels further from the bars
+  ) +
+  geom_segment(
+    data = filter(average_calories_by_hour, Highlight == "Highlight" & Stagger < 0),  # Only for labels moved higher
+    aes(x = Hour, xend = Hour, y = AvgCalories, yend = AvgCalories + 6), # Adjust line length
+    color = "black",           # Line color
+    linewidth = 0.5            # Line thickness (replaces size)
+  ) +
+  scale_fill_manual(values = c("Highlight" = "orange", "Normal" = "skyblue")) +
   labs(
     title = "Average Calories Burned by Hour",
     x = "Hour of the Day",
     y = "Average Calories"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_y_continuous(labels = scales::label_comma())  # Format y-axis with commas
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1), 
+    legend.position = "none"  # Remove the legend
+  ) +
+  scale_y_continuous(labels = scales::label_comma())
 ```
-![image](https://github.com/user-attachments/assets/44ec5193-936f-4809-9be7-1e640653d0db)
+![Rplot](https://github.com/user-attachments/assets/343e32da-e617-4736-b3a0-30935c17d43f)
 
+From 12 PM to 2 PM, users typically burn 117 calories at 12 PM, 115 at 1 PM, and 116 at 2 PM. Between 5 PM and 7 PM, users burn 123 calories at 5 PM, 124 at 6 PM, and 122 at 7 PM.
 
 ### Exploring the Relationship Between Calories, Total Steps, and Total Distance
 ```r
@@ -732,8 +753,6 @@ daily_activity %>%
     ## 2 AverageFairlyActiveMinutes            13.6     0      14 0h 14m   
     ## 3 AverageLightlyActiveMinutes          193.      3      13 3h 13m   
     ## 4 AverageSedentaryMinutes              991.     16      31 16h 31m  
-    
-
 
 On average, users spend around 16 hours a day in sedentary activity, 3 hours in lightly active minutes, 14 minutes in fairly active minutes, and 21 minutes in very active minutes. [WHO](https://www.who.int/news/item/25-11-2020-every-move-counts-towards-better-health-says-who) recommends that adults engage in at least 150 to 300 minutes of moderate to vigorous aerobic activity each week.
 ```r
@@ -768,7 +787,8 @@ daily_activity %>%
     ## 2 WeeklyAverageFairlyActiveMinutes            95.0     1      35 1h 35m   
     ## 3 WeeklyAverageLightlyActiveMinutes         1350.     22      30 22h 30m  
     ## 4 WeeklyAverageSedentaryMinutes             6938.    115      38 115h 38m 
-
+    
+```r
 daily_activity %>%
   group_by(Id) %>%
   summarise(
@@ -794,9 +814,10 @@ daily_activity %>%
     Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
     TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
   )
+```
 
 ### Weekly Average on Very Active Minutes Per User
-
+```r
 daily_activity %>%
   group_by(Id) %>%
   summarise(
@@ -815,8 +836,9 @@ daily_activity %>%
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_fill_viridis_d(option = "plasma", guide = "none")
-
+```
 ![image](https://github.com/user-attachments/assets/220da5fb-b8fc-404c-92a3-4cf43965eada)
+
 ```r
 # Count users with Weekly Average Very Active Minutes under 150
 daily_activity %>%
