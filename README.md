@@ -921,3 +921,9 @@ plot_ly(
 ![image](https://github.com/user-attachments/assets/5acb950a-1838-440d-afd2-2dd1657ca31b)
 
 Approximately 66.7% of users are not meeting the recommended weekly exercise target. About 21.2% are within the recommended range, while 12.1% are exceeding 300 minutes of exercise per week. 
+
+## SHARE
+[View my Tableau Dashboard](https://public.tableau.com/views/Bellabeat_17323224574950/Dashboard1?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
+![present](https://github.com/user-attachments/assets/1376aa02-a659-4eca-a8cb-66d507b0302e)
+
