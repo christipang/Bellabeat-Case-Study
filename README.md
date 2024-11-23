@@ -930,5 +930,6 @@ Approximately 66.7% of users are not meeting the recommended weekly exercise tar
 ## ACT
 ### Recommendations
 
-•	Collect Updated Data: this study was done in 2016 with only 30 participants. 
-: Health and lifestyle habits evolve over time, so conducting a new survey with 100+ participants would provide more relevant insights. Leveraging social media platforms like         Twitter, Instagram, and Facebook to target women—the primary audience for Bellabeat products—can help gather current data on health and habits for more accurate trend analysis.
+•	Collect Updated Data: Redoing this study with a larger participant pool and more recent data on people's health and lifestyle habits would be highly beneficial. Trends evolve over time, so the results could differ significantly from this 2016 study.
+
+•	
