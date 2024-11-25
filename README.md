@@ -612,7 +612,7 @@ summarise(Count = n())
     ##     1
 *There is 1 user who is getting more than 9 hours of sleep on average*
 
-NIH reccomends adults should get between 7 to 9 hrs of sleep daily. Only 10 users are getting the apporiate amount of sleep.
+Thirteen users are sleeping less than 7 hours per night, ten are getting the recommended amount, and one is exceeding the suggested duration. According to the [NIH](https://www.nhlbi.nih.gov/health/sleep/how-much-sleep#:~:text=Experts%20recommend%20that%20adults%20sleep,or%20more%20hours%20a%20night.), adults should sleep 7 to 9 hours daily. Currently, only ten users are meeting this recommendation.
 
 ### The Percentage Of Users Getting Different Hours of Sleep
 ```r
@@ -720,11 +720,11 @@ plot_ly(
     margin = list(l = 100, r = 100, t = 50, b = 50)
   )    
 ```
-![image](https://github.com/user-attachments/assets/4971ae36-b172-41cb-909f-8b2c22d4b862)
+<img src="https://github.com/user-attachments/assets/4971ae36-b172-41cb-909f-8b2c22d4b862" width="800">
 
 Most users (81.3%) spent the majority of their activity in sedentary minutes. A smaller portion of users spent 15.8% of their time in lightly active minutes, 1.11% in fairly active minutes, and 1.74% in very active minutes.
 
-### Average Active Minutes
+### Average Active Minutes Per Day
 ```r
 daily_activity %>%
   summarise(
@@ -752,6 +752,8 @@ daily_activity %>%
     ## 4 AverageSedentaryMinutes              991.     16      31 16h 31m  
 
 On average, users spend around 16 hours a day in sedentary activity, 3 hours in lightly active minutes, 14 minutes in fairly active minutes, and 21 minutes in very active minutes. [WHO](https://www.who.int/news/item/25-11-2020-every-move-counts-towards-better-health-says-who) recommends that adults engage in at least 150 to 300 minutes of moderate to vigorous aerobic activity each week.
+
+### Average Active Minutes Per Week
 ```r
 daily_activity %>%
   summarise(
@@ -781,48 +783,25 @@ daily_activity %>%
     ## ActivityCategory                  AverageMinutes Hours Minutes TimeLabel
     ##   <chr>                                      <dbl> <dbl>   <dbl> <chr>    
     ## 1 WeeklyAverageVeryActiveMinutes             148.      2      28 2h 28m   
-    ## 2 WeeklyAverageFairlyActiveMinutes            95.0     1      35 1h 35m   
+    ## 2 WeeklyAverageFairlyActiveMinutes           95.0      1      35 1h 35m   
     ## 3 WeeklyAverageLightlyActiveMinutes         1350.     22      30 22h 30m  
     ## 4 WeeklyAverageSedentaryMinutes             6938.    115      38 115h 38m 
-    
-```r
-daily_activity %>%
-  group_by(Id) %>%
-  summarise(
-    AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE),
-    AvgFairlyActiveMinutes = mean(FairlyActiveMinutes, na.rm = TRUE),
-    AvgLightlyActiveMinutes = mean(LightlyActiveMinutes, na.rm = TRUE),
-    AvgSedentaryMinutes = mean(SedentaryMinutes, na.rm = TRUE)
-  )%>%
-  summarise(
-    # Calculate the weekly averages by multiplying 7 days
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7, 
-    WeeklyAverageFairlyActiveMinutes = AvgFairlyActiveMinutes * 7, 
-    WeeklyAverageLightlyActiveMinutes = AvgLightlyActiveMinutes * 7,
-    WeeklyAverageSedentaryMinutes = AvgSedentaryMinutes * 7
-  ) %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = "ActivityCategory",
-    values_to = "AverageMinutes"
-  ) %>%
-  mutate(
-    Hours = floor(AverageMinutes / 60),  # Calculate total hours
-    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
-    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
-  )
-```
 
+On average, users spend 6,938 minutes (115 hours and 38 minutes) per week on sedentary activities, 1,350 minutes (22 hours and 30 minutes) on lightly active minutes, 148 minutes (2 hours and 28 minutes) on very active minutes, and 95 minutes (1 hour and 35 minutes) on fairly active minutes. The [WHO](https://www.who.int/news/item/25-11-2020-every-move-counts-towards-better-health-says-who) recommends that adults engage in at least 150 to 300 minutes of moderate to vigorous aerobic activity per week to maintain health. This indicates that most users fall short of the recommended amount of vigorous activity.
+ 
 ### Weekly Average on Very Active Minutes Per User
 ```r
+# Calculate the weekly average of Very Active Minutes for each user
 daily_activity %>%
   group_by(Id) %>%
   summarise(
     AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
   ) %>%
   mutate(
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  
   ) %>%
+
+  # Create a bar plot to visualize weekly averages by user
   ggplot(aes(x = factor(Id), y = WeeklyAverageVeryActiveMinutes, fill = factor(Id))) +
   geom_bar(stat = "identity") +
   labs(
@@ -834,7 +813,7 @@ daily_activity %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_fill_viridis_d(option = "plasma", guide = "none")
 ```
-![image](https://github.com/user-attachments/assets/220da5fb-b8fc-404c-92a3-4cf43965eada)
+<img src="https://github.com/user-attachments/assets/220da5fb-b8fc-404c-92a3-4cf43965eada" width="800">
 
 ```r
 # Count users with Weekly Average Very Active Minutes under 150
@@ -883,8 +862,10 @@ daily_activity %>%
 ```
     ##    4
 *There are 4 users who get more than 150 hours of very active exercise minutes per week.*
+
 ### Percentage of Users by Weekly Very Active Minutes
 ```r
+# Summarize weekly activity levels
 user_counts <- daily_activity %>%
   group_by(Id) %>%
   summarise(
@@ -915,7 +896,7 @@ plot_ly(
     margin = list(l = 100, r = 100, t = 50, b = 50)
   )
 ```
-![image](https://github.com/user-attachments/assets/5acb950a-1838-440d-afd2-2dd1657ca31b)
+<img src="https://github.com/user-attachments/assets/5acb950a-1838-440d-afd2-2dd1657ca31b" width="800">
 
 Approximately 66.7% of users are not meeting the recommended weekly exercise target. About 21.2% are within the recommended range, while 12.1% are exceeding 300 minutes of exercise per week. 
 
