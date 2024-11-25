@@ -354,7 +354,7 @@ average_steps_by_weekday <- daily_activity %>%
 # Create the bar chart
 ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekday)) +
   geom_bar(stat = "identity") +  # Bar chart
-  geom_text(aes(label = round(AverageSteps, 1)), vjust = -0.3) +  # Label on top of bars
+  geom_text(aes(label = round(AverageSteps, 1)), vjust = -0.3) +  
   ylab("Average Total Steps") +
   ggtitle("Average Total Steps by Weekday") 
 ````
@@ -438,22 +438,22 @@ average_calories_by_hour <- hourly_calories %>%
   mutate(
     Highlight = ifelse(Hour %in% c("12:00:00 PM", "1:00:00 PM", "2:00:00 PM", 
                                    "5:00:00 PM", "6:00:00 PM", "7:00:00 PM"), "Highlight", "Normal"),
-    Stagger = ifelse(row_number() %% 2 == 0, -0.7, 0.7)  # Adjust stagger position further
+    Stagger = ifelse(row_number() %% 2 == 0, -0.7, 0.7)  
   )
 # Create the bar chart
 ggplot(data = average_calories_by_hour, aes(x = Hour, y = AvgCalories, fill = Highlight)) +
   geom_bar(stat = "identity") +
   geom_text(
     data = filter(average_calories_by_hour, Highlight == "Highlight"),
-    aes(label = round(AvgCalories, 1), vjust = Stagger),  # Apply staggered positions
-    size = 3,                 # Adjust text size
-    nudge_y = 5               # Move the labels further from the bars
+    aes(label = round(AvgCalories, 1), vjust = Stagger),  
+    size = 3,                
+    nudge_y = 5              
   ) +
   geom_segment(
-    data = filter(average_calories_by_hour, Highlight == "Highlight" & Stagger < 0),  # Only for labels moved higher
-    aes(x = Hour, xend = Hour, y = AvgCalories, yend = AvgCalories + 6), # Adjust line length
-    color = "black",           # Line color
-    linewidth = 0.5            # Line thickness (replaces size)
+    data = filter(average_calories_by_hour, Highlight == "Highlight" & Stagger < 0),  
+    aes(x = Hour, xend = Hour, y = AvgCalories, yend = AvgCalories + 6), 
+    color = "black",          
+    linewidth = 0.5           
   ) +
   scale_fill_manual(values = c("Highlight" = "orange", "Normal" = "skyblue")) +
   labs(
@@ -476,8 +476,8 @@ Between 12 PM and 2 PM, users typically burn 117 calories at 12 PM, 115 at 1 PM,
 ```r
 # Create the scatter plot with a regression line
 ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
-  geom_point(color = "pink", alpha = 0.6) +  # Scatter plot with purple points
-  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
+  geom_point(color = "pink", alpha = 0.6) +  
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  
   labs(
     title = "Total Steps and Calories",
     x = "Total Steps",
@@ -490,8 +490,8 @@ ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
 ```r
 # Create the scatter plot with a regression line
 ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
-  geom_point(color = "pink", alpha = 0.6) +  # Scatter plot with purple points
-  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
+  geom_point(color = "pink", alpha = 0.6) +  
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  
   labs(
     title = "Total Distance and Calories",
     x = "Total Distance",
@@ -501,7 +501,7 @@ ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
 ```
 <img src="https://github.com/user-attachments/assets/693f640d-a131-4fe7-b087-8ef9cfa0793e" width="800">
 
-"The two graphs display a positive correlation, where an increase in the number of steps and distance traveled corresponds to a rise in calorie burn."
+The two graphs display a positive correlation, where an increase in the number of steps and distance traveled corresponds to a rise in calorie burn.
 
 ### Average Calories Per Day 
 ```r
@@ -512,8 +512,8 @@ average_calories_by_weekday <- daily_activity %>%
 
 # Create the bar chart
 ggplot(average_calories_by_weekday, aes(x = Weekday, y = AverageCalories, fill = Weekday)) +
-  geom_bar(stat = "identity") +  # Bar chart
-  geom_text(aes(label = round(AverageCalories, 1)), vjust = -0.3) +  # Label on top of bars
+  geom_bar(stat = "identity") +  
+  geom_text(aes(label = round(AverageCalories, 1)), vjust = -0.3) +  
   ylab("Average Calories") +
   ggtitle("Average Calories by Weekday")
 ```
@@ -535,7 +535,7 @@ total_sleep_by_weekday$Weekday <- factor(total_sleep_by_weekday$Weekday,
 # Create the bar chart
 ggplot(total_sleep_by_weekday, aes(x = Weekday, y = TotalMinutesAsleep, fill = Weekday)) +
   geom_bar(stat = "identity") +  # Bar chart
-  geom_text(aes(label = round(TotalMinutesAsleep, 1)), vjust = -0.3) +  # Label on top of bars
+  geom_text(aes(label = round(TotalMinutesAsleep, 1)), vjust = -0.3) +  
   ylab("Total Minutes Asleep") +
   ggtitle("Total Minutes Asleep by Weekday") 
 ```
@@ -559,7 +559,7 @@ sleep_day_average$Weekday <- factor(sleep_day_average$Weekday,
 # Create the bar chart
 ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekday)) +
   geom_bar(stat = "identity") +  # Bar chart
-  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3) +  # Add labels
+  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3) +  
   ylab("Average Hours Asleep") +
   ggtitle("Average Hours Asleep by Weekday") 
 ```
@@ -568,22 +568,6 @@ ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekda
 On average, users sleep between 6.7 and 7.5 hours per night, with Sunday being the day they sleep the most, followed by Wednesday.
 
 ### Average Sleep per User ID
-```r
-# Calculate the average hours asleep per Id
-average_sleep_per_id <- sleep_day %>%
-  group_by(Id) %>%
-  summarise(AverageHoursAsleep = mean(TotalMinutesAsleep) / 60)  # Convert minutes to hours
-
-# Create the bar chart
-ggplot(average_sleep_per_id, aes(x = Id, y = AverageHoursAsleep, fill = Id)) +
-  geom_bar(stat = "identity",) +  # Bar chart
-  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3, size = 3) +  # Add labels
-  ylab("Average Hours Asleep") +
-  ggtitle("Average Hours Asleep Per User") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels
-```
-<img src="https://github.com/user-attachments/assets/69466790-c062-40e7-8c7e-6e4a9fb061ee" width="800">
 
 ```r
 # Count the number of users getting less than 7 hours of sleep
@@ -612,6 +596,23 @@ summarise(Count = n())
     ##     1
 *There is 1 user who is getting more than 9 hours of sleep on average*
 
+```r
+# Calculate the average hours asleep per Id
+average_sleep_per_id <- sleep_day %>%
+  group_by(Id) %>%
+  summarise(AverageHoursAsleep = mean(TotalMinutesAsleep) / 60)  
+
+# Create the bar chart
+ggplot(average_sleep_per_id, aes(x = Id, y = AverageHoursAsleep, fill = Id)) +
+  geom_bar(stat = "identity",) +  
+  geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3, size = 3) +  
+  ylab("Average Hours Asleep") +
+  ggtitle("Average Hours Asleep Per User") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+```
+<img src="https://github.com/user-attachments/assets/69466790-c062-40e7-8c7e-6e4a9fb061ee" width="800">
+
 Thirteen users are sleeping less than 7 hours per night, ten are getting the recommended amount, and one is exceeding the suggested duration. According to the [NIH](https://www.nhlbi.nih.gov/health/sleep/how-much-sleep#:~:text=Experts%20recommend%20that%20adults%20sleep,or%20more%20hours%20a%20night.), adults should sleep 7 to 9 hours daily. Currently, only ten users are meeting this recommendation.
 
 ### The Percentage Of Users Getting Different Hours of Sleep
@@ -633,10 +634,10 @@ sleep_summary <- sleep_categories %>%
 # Create the pie chart
 ggplot(sleep_summary, aes(x = "", y = Percentage, fill = SleepCategory)) +
   geom_bar(stat = "identity", width = 1) +
-  coord_polar(theta = "y") +  # Create the pie chart
+  coord_polar(theta = "y") +  
   labs(title = "Percentage of Users Getting Different Hours of Sleep") +
-  theme_void() +  # Remove axes and grid lines
-  geom_text(aes(label = paste0(round(Percentage, 1), "%")), position = position_stack(vjust = 0.5))  # Add percentages as labels
+  theme_void() +  
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")), position = position_stack(vjust = 0.5))  
 ```
 <img src="https://github.com/user-attachments/assets/7ae4f52c-843a-4fd2-80a8-e7b8dcd343ee" width="800">
 
@@ -702,8 +703,8 @@ activity_summary_minute <- daily_activity %>%
     LightlyActiveMinutes = sum(LightlyActiveMinutes),
     SedentaryMinutes = sum(SedentaryMinutes)
   ) %>%
-  gather(key = "ActivityCategory", value = "TotalMinutes") %>%  # Convert to long format
-  mutate(Percentage = (TotalMinutes / sum(TotalMinutes)) * 100)  # Calculate percentages
+  gather(key = "ActivityCategory", value = "TotalMinutes") %>% 
+  mutate(Percentage = (TotalMinutes / sum(TotalMinutes)) * 100) 
 
 # Create the pie chart
 plot_ly(
@@ -716,7 +717,7 @@ plot_ly(
 ) %>%
   layout(
     title = 'Percentage of Active Minutes by Category',
-    xaxis = list(domain = c(0.2, 1)),  # This is the correct structure
+    xaxis = list(domain = c(0.2, 1)),  
     margin = list(l = 100, r = 100, t = 50, b = 50)
   )    
 ```
@@ -739,9 +740,9 @@ daily_activity %>%
     values_to = "AverageMinutes"
   ) %>%
   mutate(
-    Hours = floor(AverageMinutes / 60),  # Calculate total hours
-    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
-    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
+    Hours = floor(AverageMinutes / 60),  
+    Minutes = round(AverageMinutes %% 60),  
+    TimeLabel = paste0(Hours, "h ", Minutes, "m")  
   )
 ```
     ##   ActivityCategory            AverageMinutes Hours Minutes TimeLabel
@@ -751,12 +752,13 @@ daily_activity %>%
     ## 3 AverageLightlyActiveMinutes          193.      3      13 3h 13m   
     ## 4 AverageSedentaryMinutes              991.     16      31 16h 31m  
 
-On average, users spend around 16 hours a day in sedentary activity, 3 hours in lightly active minutes, 14 minutes in fairly active minutes, and 21 minutes in very active minutes. [WHO](https://www.who.int/news/item/25-11-2020-every-move-counts-towards-better-health-says-who) recommends that adults engage in at least 150 to 300 minutes of moderate to vigorous aerobic activity each week.
+On average, users spend approximately 16 hours daily being sedentary, 3 hours in lightly active activities, 14 minutes in fairly active activities, and 21 minutes in very active activities.
 
 ### Average Active Minutes Per Week
 ```r
 daily_activity %>%
-  summarise(
+ # Calculate the average daily minutes spent in each activity category
+   summarise(
     AverageVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE),
     AverageFairlyActiveMinutes = mean(FairlyActiveMinutes, na.rm = TRUE),
     AverageLightlyActiveMinutes = mean(LightlyActiveMinutes, na.rm = TRUE),
@@ -775,9 +777,10 @@ daily_activity %>%
     values_to = "AverageMinutes"
   ) %>%
   mutate(
-    Hours = floor(AverageMinutes / 60),  # Calculate total hours
-    Minutes = round(AverageMinutes %% 60),  # Calculate remaining minutes
-    TimeLabel = paste0(Hours, "h ", Minutes, "m")  # Combine into a label
+# Convert total minutes into hours and minutes
+    Hours = floor(AverageMinutes / 60),  
+    Minutes = round(AverageMinutes %% 60),  
+    TimeLabel = paste0(Hours, "h ", Minutes, "m")  
   )
 ```
     ## ActivityCategory                  AverageMinutes Hours Minutes TimeLabel
@@ -823,7 +826,7 @@ daily_activity %>%
     AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
   ) %>%
   mutate(
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  
   ) %>%
   filter(WeeklyAverageVeryActiveMinutes < 150) %>%
   summarise(count = n())
@@ -839,7 +842,7 @@ daily_activity %>%
     AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
   ) %>%
   mutate(
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  
   ) %>%
   filter(WeeklyAverageVeryActiveMinutes >= 150 & WeeklyAverageVeryActiveMinutes <= 300) %>%
   summarise(count = n())
@@ -855,7 +858,7 @@ daily_activity %>%
     AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
   ) %>%
   mutate(
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  
   ) %>%
   filter(WeeklyAverageVeryActiveMinutes > 300) %>%
   summarise(count = n())
@@ -872,7 +875,7 @@ user_counts <- daily_activity %>%
     AvgVeryActiveMinutes = mean(VeryActiveMinutes, na.rm = TRUE)
   ) %>%
   mutate(
-    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  # Weekly average
+    WeeklyAverageVeryActiveMinutes = AvgVeryActiveMinutes * 7  
   ) %>%
   summarise(
     Under150 = sum(WeeklyAverageVeryActiveMinutes < 150),
@@ -880,7 +883,7 @@ user_counts <- daily_activity %>%
     Over300 = sum(WeeklyAverageVeryActiveMinutes > 300)
   ) %>%
   gather(key = "ActivityCategory", value = "Count") %>%  # Convert to long format
-  mutate(Percentage = (Count / sum(Count)) * 100)  # Calculate percentages
+  mutate(Percentage = (Count / sum(Count)) * 100)  
 
 # Create the pie chart using the summarized data
 plot_ly(
