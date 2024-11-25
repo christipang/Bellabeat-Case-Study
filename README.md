@@ -320,7 +320,7 @@ sum(duplicated(hourly_calories))
 
 ## ANALYZE
 
-### What Days are People Most Active
+### Which Days Do Users Walk the Most
 
 ```r
 # Calculate total TotalSteps by Weekday
@@ -340,7 +340,7 @@ ggplot(total_steps_by_weekday, aes(x = Weekday, y = TotalSteps, fill = Weekday))
   ggtitle("Total Steps by Weekday") 
 
 ```
-![image](https://github.com/user-attachments/assets/b5de8237-d8b0-441b-b1ea-431e810b0099)
+<img src="https://github.com/user-attachments/assets/b5de8237-d8b0-441b-b1ea-431e810b0099" alt="Image description" width="800"/>
 
 The graph indicates that activity levels are highest on Tuesday, followed by Wednesday and Thursday.
 
@@ -358,11 +358,11 @@ ggplot(average_steps_by_weekday, aes(x = Weekday, y = AverageSteps, fill = Weekd
   ylab("Average Total Steps") +
   ggtitle("Average Total Steps by Weekday") 
 ````
-![image](https://github.com/user-attachments/assets/9471e2a1-ca1f-46f4-84d1-33f836bbab65)
+<img src="https://github.com/user-attachments/assets/9471e2a1-ca1f-46f4-84d1-33f836bbab65" width="800">
 
-On average, the highest number of steps are taken on Saturday, followed by Tuesday and Monday.
+On average, Saturday sees the highest number of steps, followed by Tuesday and Monday.
 
-### At What Hours Are the Users Most Active
+### What Hours Are Users Most Active?
 
 ```r
 # Load the scales package
@@ -392,11 +392,11 @@ ggplot(data = hourly_steps, aes(x = Hour, y = StepTotal)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
   scale_y_continuous(labels = label_comma())  
 ```
-![image](https://github.com/user-attachments/assets/b47ecd28-99ed-4c11-ad37-85e5fdcbfef9)
+<img src="https://github.com/user-attachments/assets/b47ecd28-99ed-4c11-ad37-85e5fdcbfef9" width="800">
 
-The graph indicates that users tend to be most active between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
+The graph shows that users are most active during two peak periods: between 12 PM and 2 PM, and between 5 PM and 7 PM.
 
-### At What Hours Do Users Burn the Most Calories
+### What Hours Do Users Burn the Most Calories?
 ```r
 # Load the scales package
 library(scales)
@@ -425,14 +425,11 @@ ggplot(data = hourly_calories, aes(x = Hour, y = Calories)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
   scale_y_continuous(labels = label_comma())  
 ```
+<img src="https://github.com/user-attachments/assets/122bff41-5beb-4644-ab10-331f08a03c11" width="800">
 
-![image](https://github.com/user-attachments/assets/122bff41-5beb-4644-ab10-331f08a03c11)
+The graph shows that users burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM. This pattern aligns with the total steps by hour graph, indicating that these times are also when users are most active.
 
-
-The graph indicates that users tend to burn the most calories between 5 PM and 7 PM, as well as between 12 PM and 2 PM.
-It matches with the Total Steps by Hour graph.
-
-### Average Users Burn Calories By Hour
+### Average Calories Burned by Users by Hour
 ```r
 # Calculate average calories burned per hour
 average_calories_by_hour <- hourly_calories %>%
@@ -471,9 +468,9 @@ ggplot(data = average_calories_by_hour, aes(x = Hour, y = AvgCalories, fill = Hi
   ) +
   scale_y_continuous(labels = scales::label_comma())
 ```
-![Rplot](https://github.com/user-attachments/assets/343e32da-e617-4736-b3a0-30935c17d43f)
+<img src="https://github.com/user-attachments/assets/57f40c09-0b8e-49ec-a753-e387bed58e60" width="800">
 
-From 12 PM to 2 PM, users typically burn 117 calories at 12 PM, 115 at 1 PM, and 116 at 2 PM. Between 5 PM and 7 PM, users burn 123 calories at 5 PM, 124 at 6 PM, and 122 at 7 PM.
+Between 12 PM and 2 PM, users typically burn 117 calories at 12 PM, 115 at 1 PM, and 116 at 2 PM. From 5 PM to 7 PM, the calorie burn is higher, with 123 calories burned at 5 PM, 124 at 6 PM, and 122 at 7 PM.
 
 ### Exploring the Relationship Between Calories, Total Steps, and Total Distance
 ```r
@@ -488,9 +485,10 @@ ggplot(data = daily_activity, aes(x = TotalSteps, y = Calories)) +
   ) +
   theme_minimal()
 ```
-![image](https://github.com/user-attachments/assets/d73d10a4-5c0b-47b6-b194-d88240c70f9c)
+<img src="https://github.com/user-attachments/assets/d73d10a4-5c0b-47b6-b194-d88240c70f9c" width="800">
 
 ```r
+# Create the scatter plot with a regression line
 ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
   geom_point(color = "pink", alpha = 0.6) +  # Scatter plot with purple points
   geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add linear regression line
@@ -501,9 +499,9 @@ ggplot(data = daily_activity, aes(x = TotalDistance, y = Calories)) +
   ) +
   theme_minimal()
 ```
-![image](https://github.com/user-attachments/assets/693f640d-a131-4fe7-b087-8ef9cfa0793e)
+<img src="https://github.com/user-attachments/assets/693f640d-a131-4fe7-b087-8ef9cfa0793e" width="800">
 
-The two graphs show a positive correlation. As the number of steps and the distance traveled increase, calorie burn also rises.
+"The two graphs display a positive correlation, where an increase in the number of steps and distance traveled corresponds to a rise in calorie burn."
 
 ### Average Calories Per Day 
 ```r
@@ -519,11 +517,11 @@ ggplot(average_calories_by_weekday, aes(x = Weekday, y = AverageCalories, fill =
   ylab("Average Calories") +
   ggtitle("Average Calories by Weekday")
 ```
-![image](https://github.com/user-attachments/assets/365d2388-bdcf-442d-9f87-a326aff031f5)
+<img src="https://github.com/user-attachments/assets/365d2388-bdcf-442d-9f87-a326aff031f5" width="800">
 
-The graph shows that users burn an average of 2,100 to 2,300 calories per day. The WHO recommends that adults consume approximately 2,000 calories daily.
+The graph shows that users burn an average of 2,100 to 2,300 calories per day, while the [World Health Organization (WHO)](https://www.who.int/news-room/fact-sheets/detail/healthy-diet) recommends an approximate daily calorie intake of 2,000 calories for adults.
 
-### What Days do Users Sleep the Most
+### Which Days Do Users Sleep the Most?
 ```r
 # Calculate total TotalMinutesAsleep by Weekday
 total_sleep_by_weekday <- sleep_day %>%
@@ -541,11 +539,11 @@ ggplot(total_sleep_by_weekday, aes(x = Weekday, y = TotalMinutesAsleep, fill = W
   ylab("Total Minutes Asleep") +
   ggtitle("Total Minutes Asleep by Weekday") 
 ```
-![image](https://github.com/user-attachments/assets/242cbeb4-b198-4cbb-8ea5-1f2837ee4123)
+<img src="https://github.com/user-attachments/assets/242cbeb4-b198-4cbb-8ea5-1f2837ee4123" width="800">
 
-Users sleep the most on Wednesday then Tuesday and Thursday. 
+Users sleep the most on Wednesday, followed by Tuesday and Thursday.
 
-### On Average How Many Hours Do Users Sleep Per Day 
+### Average Daily Sleep Duration of Users
 
 ```r
 # Convert minutes to hours and calculate the average hours per weekday
@@ -565,11 +563,11 @@ ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekda
   ylab("Average Hours Asleep") +
   ggtitle("Average Hours Asleep by Weekday") 
 ```
-![image](https://github.com/user-attachments/assets/076b8ee1-ec11-4abb-acb4-7a8c56cdf966)
+<img src="https://github.com/user-attachments/assets/076b8ee1-ec11-4abb-acb4-7a8c56cdf966" width="800">
 
-On average users sleep between 6.7 hours to 7.5 hrs. Users sleep more on Sunday then Wednesday.
+On average, users sleep between 6.7 and 7.5 hours per night, with Sunday being the day they sleep the most, followed by Wednesday.
 
-### The Average Amount of Sleep User Gets
+### Average Sleep per User ID
 ```r
 # Calculate the average hours asleep per Id
 average_sleep_per_id <- sleep_day %>%
@@ -585,9 +583,8 @@ ggplot(average_sleep_per_id, aes(x = Id, y = AverageHoursAsleep, fill = Id)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels
 ```
-![image](https://github.com/user-attachments/assets/69466790-c062-40e7-8c7e-6e4a9fb061ee)
+<img src="https://github.com/user-attachments/assets/69466790-c062-40e7-8c7e-6e4a9fb061ee" width="800">
 
-There are three users who only got on average 1, 1.1, and 2.1 hours of sleep. There is one user who gets 10 hours of sleep. 
 ```r
 # Count the number of users getting less than 7 hours of sleep
 average_sleep_per_id %>%
@@ -641,9 +638,9 @@ ggplot(sleep_summary, aes(x = "", y = Percentage, fill = SleepCategory)) +
   theme_void() +  # Remove axes and grid lines
   geom_text(aes(label = paste0(round(Percentage, 1), "%")), position = position_stack(vjust = 0.5))  # Add percentages as labels
 ```
-![image](https://github.com/user-attachments/assets/7ae4f52c-843a-4fd2-80a8-e7b8dcd343ee)
+<img src="https://github.com/user-attachments/assets/7ae4f52c-843a-4fd2-80a8-e7b8dcd343ee" width="800">
 
-41.7% of users are getting the recommended amount of sleep, while 54.2% are getting less than the recommended hours, which is more than half of the users.
+"41.7% of users are meeting the recommended sleep duration, while 54.2% are getting less than the suggested hours, accounting for more than half of the users.
 
 ### Summary of TotalSteps, TotalDistance, Calories, and TotalMinutesAsleep
 ```r
