@@ -334,7 +334,7 @@ total_steps_by_weekday$Weekday <- factor(total_steps_by_weekday$Weekday,
 
 # Create the bar chart
 ggplot(total_steps_by_weekday, aes(x = Weekday, y = TotalSteps, fill = Weekday)) +
-  geom_bar(stat = "identity") +  # Bar chart
+  geom_bar(stat = "identity") +  
   geom_text(aes(label = round(TotalSteps, 1)), vjust = -0.3) + 
   ylab("Total Steps") +
   ggtitle("Total Steps by Weekday") 
@@ -558,7 +558,7 @@ sleep_day_average$Weekday <- factor(sleep_day_average$Weekday,
 
 # Create the bar chart
 ggplot(sleep_day_average, aes(x = Weekday, y = AverageHoursAsleep, fill = Weekday)) +
-  geom_bar(stat = "identity") +  # Bar chart
+  geom_bar(stat = "identity") +  
   geom_text(aes(label = round(AverageHoursAsleep, 1)), vjust = -0.3) +  
   ylab("Average Hours Asleep") +
   ggtitle("Average Hours Asleep by Weekday") 
